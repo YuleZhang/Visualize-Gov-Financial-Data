@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        .body {
+            width: 100%;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        ul a {
+            padding: 5px 10px;
+            color: #FFFFFF;
+            font-size: 18px;
+        }
+
+        ul a:hover {
+            text-decoration: none;
+            color: #31231E;
+        }
+
+        .bg-1 {
+            background-color: #5A3A31;
+        }
+
+        .bg-2 {
+            background-color: #E3D888;
+        }
+
+        .h-1 {
+            height: 100vh;
+        }
+
+        .c-1 {
+            color: #FFFFFF;
+        }
+
+        h2 {
+            background: #31231E;
+            float:left;
+            clear:left;
+            width: 100%;
+        }
+    </style>
+    <title>政府财政信息可视</title>
+  </head>
+  <body>
+    <div class="body">
+        <div class="col-md-12">
+            <div class="row">
+            <div class="col-md-2 bg-1 h-1 c-1 pl-0 pr-0">
+                <h2 class="p-4">政府财政信息可视</h2>
+                <ul class="mt-4">
+                    <a href="{{url_for('admin')}}"><li>数据查询</li></a>
+                    <a href="{{url_for('addUser')}}"><li>用户管理</li></a>
+                </ul>
+            </div>
+            <div class="col-md-10 bg-2 h-2">
+                <div class="col-md-10 d-flex justify-content-center">
+                    <div class="col-md-10">
+                            <h3 class="mt-4">添加用户</h3>
+                            <form action="#" method="POST">
+                                <div class="form-group">
+                                  <label for="username">用户名</label>
+                                  <input type="" class="form-control" name="etkinlik_baslik" id="user" value="">
+                                  <label for="password">密码</label>
+                                  <input type="password" class="form-control" name="etkinlik_tarihi" id="password" value="">
+                                  <input type="hidden" class="form-control" name="etkinlik_id" id="formGroupExampleInput" value="">
+                                </div>
+                                <input type="button" class="btn btn-success" onclick="addUser()" value="添加">
+                            </form>
+                            <h5 class="mt-4">用户列表</h5>
+                            <table class="table" id="userList">
+                            <thead>
+                              <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">用户</th>
+                                <th scope="col">密码</th>
+                                <th scope="col">用户身份</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in result %}
+                                <tr>
+                                   <td>{{item.loginID}}</td>
+                                   <td>{{item.loginUser}}</td>
+                                   <td>{{item.loginPass}}</td>
+                                   <td>{{item.loginLevel}}</td>
+                                   
+                                    <td style="width: 100px;float: left; margin-right: 20px;">
+                                        <a href="#">
+                                            <button width="80" class="btn btn-success" onclick="modifyUser(this)">修改</button>
+                                        </a>
+                                    </td>
+                                    <td style="width: 100px;float: left;">
+                                        <a href="#">
+                                            <button width="80" class="btn btn-danger" onclick="removeUser(this)">删除</button>
+                                        </a>
+                                    </td>
+                                    <td style="width: 120px;float: left;">
+                                        <a href="#">
+                                            <button width="120" class="btn btn-danger" onclick="improveLevel(this)">提升级别</button>
+                                        </a>
+                                    </td>
+                                   </tr>
+                                {% endfor %}
+                            </tbody>
+                          </table>
+                    </div>
+
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  </body>
+</html>
+<script type="text/javascript">
+    //添加用户
+    function addUser(){
+        var username = document.getElementById("user").value;
+        var password = document.getElementById("password").value;
+        if (username=="" || password==""){
+            return -1;
+        }
+        // clearTB("userList");
+        // var httpRequest = new XMLHttpRequest();//第一步：创建需要的对象
+        // httpRequest.open('POST', '/addUser', true); //第二步：打开连接
+        // httpRequest.setRequestHeader("Content-type","application/x-www-form-urlencoded");//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
+        // httpRequest.send('user='+username+'&password='+password);//发送请求 将情头体写在send中
+        params = 'user='+username+'&password='+password;
+        batchUpdate("/addUser",params);
+        /**
+         * 获取数据后的处理程序
+         */
+        // httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
+        //     if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
+        //         for(var idx in json){
+        //             addRow(json[idx]['loginID'],json[idx]['loginUser'],json[idx]['loginPass'],json[idx]['loginLevel']);
+        //         }
+        //         alert("用户添加成功");
+        //     }
+        // };
+    }
+    //删除用户
+    function removeUser(obj){
+        var row = obj.parentNode.parentNode.parentNode;
+        var username = row.cells[1].textContent;
+        if(row.cells[3].textContent=='管理员'){
+            alert("管理员用户不能删");
+            return -1;
+        }
+        // clearTB("userList");
+        // var httpRequest = new XMLHttpRequest();//第一步：创建需要的对象
+        // httpRequest.open('POST', '/deleteUser', true); //第二步：打开连接
+        // httpRequest.setRequestHeader("Content-type","application/x-www-form-urlencoded");//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
+        // httpRequest.send('user='+username);//发送请求 将情头体写在send中
+        params = 'user='+username;
+        batchUpdate('/deleteUser',params);
+        /**
+         * 获取数据后的处理程序
+         */
+        // httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
+        //     if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
+        //         var json = JSON.parse(httpRequest.responseText);//获取到服务端返回的数据
+        //         console.log(json);
+        //         for(var idx in json){
+        //             addRow(json[idx]['loginID'],json[idx]['loginUser'],json[idx]['loginPass'],json[idx]['loginLevel']);
+        //         }
+        //     }
+        // };
+        // var idx = row.rowIndex;
+        // document.getElementById("userList").deleteRow(idx);
+    }
+    //修改用户
+    function modifyUser(obj){
+        // clearTB("userList");
+        var row = obj.parentNode.parentNode.parentNode;
+        var user = row.cells['1'].textContent;
+        var password=prompt("请输入新密码","xxx"); // 弹出input框
+        // var httpRequest = new XMLHttpRequest();//第一步：创建需要的对象
+        // httpRequest.open('POST', '/modifyUser', true); //第二步：打开连接
+        // httpRequest.setRequestHeader("Content-type","application/x-www-form-urlencoded");//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
+        // httpRequest.send();//发送请求 将情头体写在send中
+        params = 'user='+user+'&password='+password
+        batchUpdate('/modifyUser',params);
+        // /**
+        //  * 获取数据后的处理程序
+        //  */
+        // httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
+        //     if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
+        //         var json = JSON.parse(httpRequest.responseText);//获取到服务端返回的数据
+        //         console.log(json);
+        //         for(var idx in json){
+        //             addRow(json[idx]['loginID'],json[idx]['loginUser'],json[idx]['loginPass'],json[idx]['loginLevel']);
+        //         }
+        //     }
+        // };
+        alert("修改成功");
+    }
+    //提升user权限
+    function improveLevel(obj){
+        var row = obj.parentNode.parentNode.parentNode;
+        var user = row.cells['1'].textContent;
+        if(row.cells[3].textContent=='管理员'){
+            alert("已经是管理员");
+            return -1;
+        }
+        params = 'user='+user
+        batchUpdate('/improveLevel',params);
+    }
+    //添加一行
+    function addRow(id,name,password,level){ 
+        var result="";
+        result +="<tr>";
+        result +="<td style='text-align: center;'>"+id+"</td>";
+        result +="<td style='text-align: center;'>"+name+"</td>";
+        result +="<td style='text-align: center;'>"+password+"</td>";
+        result +="<td style='text-align: center;'>"+level+"</td>";
+        result +="<td style='width: 100px;float: left; margin-right: 20px;'><a href='#'><button width='80' class='btn btn-success' onclick='modifyUser(this)'>修改</button></a></td><td style='width: 100px;float: left;'><a href='#'><button width='80' class='btn btn-danger' onclick='removeUser(this)'>删除</button></a></td>"
+        result +="</tr>";
+        $("#userList tbody").append(result);
+    };
+    //清空table
+    function clearTB(id){ 
+        tableObj = document.getElementById(id);
+        rowcount = tableObj.rows.length;
+        for(i=rowcount  - 1;i > 0; i--){
+           tableObj.deleteRow(i);
+        }
+    };
+    function batchUpdate(url,params){
+        clearTB("userList");
+        var httpRequest = new XMLHttpRequest();//第一步：创建需要的对象
+        httpRequest.open('POST', url, true); //第二步：打开连接
+        httpRequest.setRequestHeader("Content-type","application/x-www-form-urlencoded");//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
+        httpRequest.send(params);//发送请求 将情头体写在send中
+        /**
+         * 获取数据后的处理程序
+         */
+        httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
+            if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
+                var json = JSON.parse(httpRequest.responseText);//获取到服务端返回的数据
+                console.log(json);
+                for(var idx in json){
+                    addRow(json[idx]['loginID'],json[idx]['loginUser'],json[idx]['loginPass'],json[idx]['loginLevel']);
+                }
+            }
+        };
+    }
+</script>>

@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        .body {
+            width: 100%;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        ul a {
+            padding: 5px 10px;
+            color: #FFFFFF;
+            font-size: 18px;
+        }
+
+        ul a:hover {
+            text-decoration: none;
+            color: #31231E;
+        }
+
+        .bg-1 {
+            background-color: #5A3A31;
+        }
+
+        .bg-2 {
+            background-color: #E3D888;
+        }
+
+        .h-1 {
+            height: 100vh;
+        }
+
+        .c-1 {
+            color: #FFFFFF;
+        }
+
+        h2 {
+            background: #31231E;
+            float:left;
+            clear:left;
+            width: 100%;
+        }
+    </style>
+    <title>政府财政信息可视化</title>
+  </head>
+  <body>
+    <div class="body">
+        <div class="col-md-12">
+            <div class="row">
+            <div class="col-md-2 bg-1 h-1 c-1 pl-0 pr-0">
+                <h2 class="p-4">政府财政信息可视化</h2>
+                <ul class="mt-4">
+                    <a href="{{url_for('admin')}}"><li>数据查询</li></a>
+                    <a href="{{url_for('addUser')}}"><li>用户管理</li></a>
+                </ul>
+            </div>
+            <div class="col-md-10 bg-2 h-2">
+                <div class="col-md-10 d-flex justify-content-center">
+                    <div class="col-md-10">
+                        <div class="col-md-8 mt-4">
+
+                            <form action="#" class="form-inline" method="POST">
+                                  <div class="form-group">
+                                    <label for='type'>类别</label>
+                                    <select id='type' name='type' class="form-control" style="margin-left: 20px">
+                                      <option>省政府预算</option>
+                                      <option>省政府决算</option>
+                                      <option>省级部门预算</option>
+                                      <option>省级部门决算</option>
+                                    </select>
+                                  </div>
+                                  <div class="form-group" style="margin-left: 50px">
+                                    <label for="year">年份</label>
+                                    <select id='year' name='year' class="form-control" style="margin-left: 20px">
+                                      <option>2020</option>
+                                      <option>2019</option>
+                                      <option>2018</option>
+                                    </select>
+                                  </div>
+                                  <button type="button" class="btn btn-primary" onclick="refreshTable()" style="margin-left: 50px">查询</button>
+                            </form>
+                        </div>
+                        <h5 class="mt-4">文件信息</h5>
+                        <table class="table" id="searchAns">
+                            <thead>
+                              <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">文件名称</th>
+                                <th scope="col">文件路径</th>
+                                <th scope="col">日期</th>
+                                <th scope="col"></th>
+                              </tr>
+                            </thead>
+                            <tbody>    
+                              {% for item in result %}
+                              <tr>
+                                 <td>{{item.fileID}}</td>
+                                 <td>{{item.fileName}}</td>
+                                 <td>{{item.fileUrl}}</td>
+                                 <td>{{item.fileDate}}</td>
+                                 <td style="width: 120px;float: left;">
+                                    <a href="#">
+                                        <button width="120" class="btn btn-info" onclick="showPDF(this)">查看</button>
+                                    </a>
+                                 </td>
+                                 
+                                  </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  </body>
+</html>
+<script>
+    function refreshTable(){
+        clearTB("searchAns");
+        var typeObj = document.getElementById("type");
+        var yearObj = document.getElementById("year");
+        var index1 = typeObj.selectedIndex;
+        var index2 = yearObj.selectedIndex;
+        var type = typeObj[index1].text;
+        var year = yearObj[index2].text;
+        var httpRequest = new XMLHttpRequest();//第一步：创建需要的对象
+        httpRequest.open('POST', '/search', true); //第二步：打开连接
+        httpRequest.setRequestHeader("Content-type","application/x-www-form-urlencoded");//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
+        httpRequest.send('type='+type+'&year='+year);//发送请求 将情头体写在send中
+        /**
+         * 获取数据后的处理程序
+         */
+        httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
+            if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
+                var json = JSON.parse(httpRequest.responseText);//获取到服务端返回的数据
+                console.log(json);
+                for(var idx in json){
+                    addRow(json[idx]['fileID'],json[idx]['fileName'],json[idx]['fileUrl'],json[idx]['fileDate']);
+                }
+                
+            }
+        };
+    };
+    //添加一行
+    function addRow(id,name,url,date){ 
+        var result="";
+        result +="<tr>";
+        result +="<td style='text-align: center;'>"+id+"</td>";
+        result +="<td style='text-align: center;'>"+name+"</td>";
+        result +="<td style='text-align: center;'>"+url+"</td>";
+        result +="<td style='text-align: center;'>"+date+"</td>";
+        result +="<td style='width: 120px;float: left;'><a href='#'><button width='120' class='btn btn-info' onclick='showPDF(this)'>查看</button></a></td>"
+        result +="</tr>";
+        $("#searchAns tbody").append(result);
+    };
+    //清空table
+    function clearTB(id){ 
+        tableObj = document.getElementById(id);
+        rowcount = tableObj.rows.length;
+        for(i=rowcount  - 1;i > 0; i--){
+           tableObj.deleteRow(i);
+        }
+    };
+    //显示pdf文件
+    function showPDF(obj){
+        console.log(obj);
+        var url = obj.parentNode.parentNode.parentNode.cells[2].textContent;
+        window.open(url)
+    };
+</script>
